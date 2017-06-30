@@ -1,0 +1,5 @@
+{
+  "prot_dir":"prot",
+  "prot_file":"protVec_100d_3grams.csv",
+  "prot_file_serialized":"protVec_100d_3grams.pickle"
+}

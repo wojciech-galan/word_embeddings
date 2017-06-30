@@ -1,0 +1,22 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import numpy as np
+import constants
+import pickle
+
+
+def read(fname=constants.PROT_VEC_CSV):
+    ret_dir = {}
+    with open(fname) as f:
+        for line in f:
+            k, v = line.rstrip().strip('"').split(None, 1)
+            v = np.array(v.split())
+            ret_dir[k] = v
+    return ret_dir
+
+
+if __name__ == '__main__':
+    prot_vecs = list(read().values())[0]
+    with open(constants.PROT_VEC_PICKLE, 'wb') as outfile:
+        pickle.dump(prot_vecs, outfile)
