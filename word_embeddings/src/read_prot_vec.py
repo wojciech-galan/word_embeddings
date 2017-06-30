@@ -11,7 +11,7 @@ def read(fname=constants.PROT_VEC_CSV):
     with open(fname) as f:
         for line in f:
             k, v = line.rstrip().strip('"').split(None, 1)
-            v = np.array(v.split())
+            v = np.array([float(x) for x in v.split()])
             ret_dir[k] = v
     return ret_dir
 
