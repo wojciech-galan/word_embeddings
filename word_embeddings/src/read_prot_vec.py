@@ -17,6 +17,7 @@ def read(fname=constants.PROT_VEC_CSV):
 
 
 if __name__ == '__main__':
-    prot_vecs = list(read().values())
+    prot_vecs = read()
+    print(type(prot_vecs))
     with open(constants.PROT_VEC_PICKLE, 'wb') as outfile:
         pickle.dump(prot_vecs, outfile)
