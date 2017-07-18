@@ -24,7 +24,7 @@ class Sequence(object):
         self.disorder = disorder
 
     def __repr__(self):
-        return 'Sequence (%s, %s, %s, %s, %s, %s, %s, %s, %s)'%(self.title, self.sn, self.prot_size, self.total_dr,
+        return"Sequence ('%s', %s, %s, %s, %s, %s, %s, '%s', '%s')"%(self.title, self.sn, self.prot_size, self.total_dr,
                                                                 self.num_dr, str(self.size_dr), str(self.locations),
                                                                 self.seq, self.disorder)
 
@@ -42,10 +42,10 @@ def _parse_2nd_line(a_line, location_re=LAST_ELEMENT_RE, num_or_comma_re=NUMERIC
             return pattern.findall(string)[0]
         except IndexError:# no element found
             return ''
-    sn = get_val(elements[0])
-    prot_size = get_val(elements[1])
-    total_dr = get_val(elements[2])
-    num_dr = get_val(elements[3])
+    sn = int(get_val(elements[0]))
+    prot_size = int(get_val(elements[1]))
+    total_dr = int(get_val(elements[2]))
+    num_dr = int(get_val(elements[3]))
     size_dr = [int(x) for x in get_val(elements[4]).split(',') if x]
     # location
     locations = []
