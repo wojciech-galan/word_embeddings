@@ -63,7 +63,6 @@ def parse(txt, sequence_re=SEQ_RE, location_re=LAST_ELEMENT_RE, num_or_comma_re=
         seq = lines[2]
         disorder = lines[3]
         assert len(seq) == len(disorder)
-        print(sn, prot_size, total_dr, num_dr, size_dr, locations)
         yield Sequence(title_string, sn, prot_size, total_dr, num_dr, size_dr, locations, seq, disorder)
 
 
