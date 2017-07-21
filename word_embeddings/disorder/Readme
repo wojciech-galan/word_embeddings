@@ -1,0 +1,17 @@
+Format of ".db" files
+
+Each protein chain takes 4 lines:
+Line 1: protein identifier
+Line 2: general infomation
+	"sn"        - serial number (same sn in id)
+        "prot_size" - protein size
+        "total_dr"  - total number of disordered residues
+        "num_dr"    - number of disordered regions
+        "size_dr"   - size of each disordered region (separate by ",")
+        "#a-b"      - location of each disordered region
+Line 3: amino acid sequence
+Line 4: annotation
+	"-" - ordered
+        "+" - disordered
+	"X" - unknown
+
