@@ -1,5 +1,7 @@
 {
   "prot_dir":"prot",
   "prot_file":"protVec_100d_3grams.csv",
-  "prot_file_serialized":"protVec_100d_3grams.pickle"
+  "prot_file_serialized":"protVec_100d_3grams.pickle",
+  "nuc_viruses_dir":"nuc_viruses",
+  "nuc_viruses_container":"container_Fri_Jul_21_11:45:09_2017.dump"
 }
