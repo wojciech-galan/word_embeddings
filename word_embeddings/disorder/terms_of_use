@@ -1,2 +1,3 @@
-The datasets originate from https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btw678.
+The DM4229.db and SL477.db datasets originate from https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btw678.
 You should cite the publication, when you use the datasets.
+CASP datasets were downloaded from predictioncenter.org/download_area/.
