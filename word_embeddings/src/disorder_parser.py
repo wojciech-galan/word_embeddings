@@ -4,12 +4,19 @@
 import os
 import re
 
+# + means disordered residue
+# - means odrered residue
+# X means no information
+REPLACEMENT_DICT = {'O':'-', 'D':'+'}
+
 LAST_ELEMENT_RE = re.compile('(\d+)-(\d+)')
 SEQ_RE = re.compile('>[^>]+')
 NUMERIC_OR_COMMA_RE = re.compile('[\d,]+')
+CASP_RE = re.compile('^PFRMAT	DR\s+^TARGET\s+(\S+)\s+((^.\s.\s\d+\s)+)END', re.MULTILINE)
 
 
 class Sequence(object):
+    """Represents protein sequences and their disordered regions from DM4229.db and SL477.db"""
 
     def __init__(self, title, sn, prot_size, total_dr, num_dr, size_dr, locations, seq, disorder):
         super().__init__()
@@ -30,6 +37,7 @@ class Sequence(object):
 
 
 def _parse_2nd_line(a_line, location_re=LAST_ELEMENT_RE, num_or_comma_re=NUMERIC_OR_COMMA_RE):
+    """Helper for 'parse' function"""
     assert a_line.startswith('$')
     elements = a_line.split()[1:]
     assert elements[0].startswith('sn') and elements[1].startswith('prot_size') and \
@@ -56,6 +64,7 @@ def _parse_2nd_line(a_line, location_re=LAST_ELEMENT_RE, num_or_comma_re=NUMERIC
 
 
 def parse(txt, sequence_re=SEQ_RE, location_re=LAST_ELEMENT_RE, num_or_comma_re=NUMERIC_OR_COMMA_RE):
+    """Parser for DM4229.db and SL477.db files"""
     for seq in sequence_re.findall(txt):
         lines = [s for s in seq.split(os.linesep) if s.strip()]
         title_string = lines[0][1:]
@@ -66,6 +75,47 @@ def parse(txt, sequence_re=SEQ_RE, location_re=LAST_ELEMENT_RE, num_or_comma_re=
         yield Sequence(title_string, sn, prot_size, total_dr, num_dr, size_dr, locations, seq, disorder)
 
 
+class CASPSequence(object):
+    """Represents protein sequences and their disordered regions from CASP competition"""
+
+    def __init__(self, name, seq, disorder):
+        assert len(seq) == len(disorder)
+        self.title = name
+        self.seq = seq
+        self.disorder = disorder
+        self.prot_size = len(seq)
+
+    def __repr__(self):
+        return "CASPSequence ('%s', '%s', '%s')" %(self.title, self.seq, self.disorder)
+
+
+def parse_casp_directory(directory, re_whole_file=CASP_RE, replacement_dict=REPLACEMENT_DICT):
+    ret_list = []
+    for file in os.listdir(directory):
+        ret_list.append(parse_casp_file(os.path.join(directory, file), re_whole_file, replacement_dict))
+    return ret_list
+
+
+def parse_casp_file(f_path, re_whole_file=CASP_RE, replacement_dict=REPLACEMENT_DICT):
+    seq = []
+    disorder = []
+    with open(f_path) as f:
+        content = f.read()
+        match = re_whole_file.match(content)
+        assert match
+        # group nr 1 contains the protein name
+        target_name = match.group(1)
+        # group nr 2 contains all the interesting lines
+        for line in match.group(2).strip().split('\n'):
+            splitted = line.split()
+            seq.append(splitted[0])
+            disorder.append(splitted[1])
+        disorder = [replacement_dict.get(c, 'X') for c in disorder]
+    return CASPSequence(target_name, ''.join(seq), ''.join(disorder))
+
+
 if __name__ == '__main__':
+    for seq in parse_casp_directory('../disorder/casp9.DR_targets/'):
+        print (seq)
     for seq in parse(open('../disorder/SL477.db').read()):
         print(seq)
