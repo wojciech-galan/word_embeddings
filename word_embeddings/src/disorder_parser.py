@@ -3,6 +3,8 @@
 
 import os
 import re
+import abc
+from convert import convert
 
 # + means disordered residue
 # - means odrered residue
@@ -15,20 +17,30 @@ NUMERIC_OR_COMMA_RE = re.compile('[\d,]+')
 CASP_RE = re.compile('^PFRMAT	DR\s+^TARGET\s+(\S+)\s+((^.\s.\s\d+\s)+)END', re.MULTILINE)
 
 
-class Sequence(object):
+class BaseSequence(abc.ABC):
+
+    def __init__(self, title, seq, disorder):
+        super().__init__()
+        self.title = title
+        self.seq = seq
+        self.disorder = disorder
+
+    @abc.abstractmethod
+    def __repr__(self):
+        pass
+
+
+class Sequence(BaseSequence):
     """Represents protein sequences and their disordered regions from DM4229.db and SL477.db"""
 
     def __init__(self, title, sn, prot_size, total_dr, num_dr, size_dr, locations, seq, disorder):
-        super().__init__()
-        self.title = title
+        super().__init__(title, seq, disorder)
         self.sn = sn
         self.prot_size = prot_size
         self.total_dr = total_dr
         self.num_dr = num_dr
         self.size_dr = size_dr
         self.locations = locations
-        self.seq = seq
-        self.disorder = disorder
 
     def __repr__(self):
         return"Sequence ('%s', %s, %s, %s, %s, %s, %s, '%s', '%s')"%(self.title, self.sn, self.prot_size, self.total_dr,
@@ -75,14 +87,12 @@ def parse(txt, sequence_re=SEQ_RE, location_re=LAST_ELEMENT_RE, num_or_comma_re=
         yield Sequence(title_string, sn, prot_size, total_dr, num_dr, size_dr, locations, seq, disorder)
 
 
-class CASPSequence(object):
+class CASPSequence(BaseSequence):
     """Represents protein sequences and their disordered regions from CASP competition"""
 
     def __init__(self, name, seq, disorder):
         assert len(seq) == len(disorder)
-        self.title = name
-        self.seq = seq
-        self.disorder = disorder
+        super().__init__(name, seq, disorder)
         self.prot_size = len(seq)
 
     def __repr__(self):
