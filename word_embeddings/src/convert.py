@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pickle
-import constants
+from . import constants
 
 
 def convert(seq, representation_dictionary, wlen, start=0):
