@@ -5,6 +5,7 @@ import os
 import re
 import abc
 import pickle
+import numpy as np
 from . import constants
 from .convert import convert
 
@@ -51,6 +52,8 @@ class BaseSequence(abc.ABC):
             if not self.__forbidden_value in self.disorder[x:x + self.word_size]:
                 yield (self.__representation_dict[self.seq[x:x+self.word_size]],
                        transform_disorder_string_to_value(self.disorder[x:x+self.word_size]))
+            else:
+                yield (np.full(len(list(self.__representation_dict.values())[0]), np.nan), np.nan)
 
     @abc.abstractmethod
     def __repr__(self):
