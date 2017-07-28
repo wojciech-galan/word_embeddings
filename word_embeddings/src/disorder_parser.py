@@ -4,12 +4,17 @@
 import os
 import re
 import abc
+import pickle
+import constants
 from convert import convert
 
 # + means disordered residue
 # - means odrered residue
 # X means no information
 REPLACEMENT_DICT = {'O':'-', 'D':'+'}
+DISORDER_VALUE_DICT = {'-':0, '+':1}
+DISORDER_FORBIDDEN_VALUE = 'X'
+REPRESENTATION_DICT = pickle.load(open(constants.PROT_VEC_PICKLE, 'rb'))
 
 LAST_ELEMENT_RE = re.compile('(\d+)-(\d+)')
 SEQ_RE = re.compile('>[^>]+')
@@ -19,11 +24,33 @@ CASP_RE = re.compile('^PFRMAT	DR\s+^TARGET\s+(\S+)\s+((^.\s.\s\d+\s)+)END', re.M
 
 class BaseSequence(abc.ABC):
 
-    def __init__(self, title, seq, disorder):
+    def __init__(self, title, seq, disorder, representation_dict=REPRESENTATION_DICT, word_size=3,
+                 forbidden_value=DISORDER_FORBIDDEN_VALUE, value_dict=DISORDER_VALUE_DICT):
+        assert len(seq) == len(disorder)
         super().__init__()
         self.title = title
         self.seq = seq
         self.disorder = disorder
+        self.word_size = word_size
+        self.__representation_dict = representation_dict
+        self.__forbidden_value = forbidden_value
+        self.__value_dict = value_dict
+
+    # def __get_embeddings(self, frame):
+    #     return convert(self.seq, pickle.load(open(constants.PROT_VEC_PICKLE, 'rb')), self.word_size, frame)
+
+    def get_representation_and_disorder(self):
+        """
+        Generator that yields tuples (embeddings, value_for_disorder).
+        :param frame:
+        :return:
+        """
+        def transform_disorder_string_to_value(disorder_string):
+            return sum(self.__value_dict[x] for x in disorder_string)/len(disorder_string)
+        for x in range(0, len(self.seq)+1-self.word_size):
+            if not self.__forbidden_value in self.disorder[x:x + self.word_size]:
+                yield (self.__representation_dict[self.seq[x:x+self.word_size]],
+                       transform_disorder_string_to_value(self.disorder[x:x+self.word_size]))
 
     @abc.abstractmethod
     def __repr__(self):
@@ -91,7 +118,6 @@ class CASPSequence(BaseSequence):
     """Represents protein sequences and their disordered regions from CASP competition"""
 
     def __init__(self, name, seq, disorder):
-        assert len(seq) == len(disorder)
         super().__init__(name, seq, disorder)
         self.prot_size = len(seq)
 
@@ -120,12 +146,22 @@ def parse_casp_file(f_path, re_whole_file=CASP_RE, replacement_dict=REPLACEMENT_
             splitted = line.split()
             seq.append(splitted[0])
             disorder.append(splitted[1])
-        disorder = [replacement_dict.get(c, 'X') for c in disorder]
+        disorder = [replacement_dict.get(c, DISORDER_FORBIDDEN_VALUE) for c in disorder]
     return CASPSequence(target_name, ''.join(seq), ''.join(disorder))
 
 
 if __name__ == '__main__':
     for seq in parse_casp_directory('../disorder/casp9.DR_targets/'):
-        print (seq)
+        #print (seq._BaseSequence__get_disorder_values(0))
+        #print(seq._BaseSequence__get_disorder_values(1))
+        print (seq.disorder)
+
     for seq in parse(open('../disorder/SL477.db').read()):
         print(seq)
+
+    seq = CASPSequence('bla', 'AGATA', '---++')
+    print (seq)
+    for representation, disorder in seq.get_representation_and_disorder():
+        print (representation)
+        print (disorder)
+        print ('__________________')
