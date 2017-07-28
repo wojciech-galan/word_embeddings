@@ -5,8 +5,8 @@ import os
 import re
 import abc
 import pickle
-import constants
-from convert import convert
+from . import constants
+from .convert import convert
 
 # + means disordered residue
 # - means odrered residue
