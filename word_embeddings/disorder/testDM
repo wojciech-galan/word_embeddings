@@ -1,0 +1,8 @@
+>DisProt|DP00002|uniprot|P02400|sp|RLA4_YEAST #1-110
+$ sn:2 prot_size:110 total_dr:110 num_dr:1 size_dr:110 #1-110
+MKYLAAYLLLVQGGNAAPSAADIKAVVESVGAEVDEARINELLSSLEGKGSLEEIIAEGQKKFATVPTGGASSAAAGAAGAAAGGDAAEEEKEEEAKEESDDDMGFGLFD
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>DisProt|DP00039|uniprot|P05204|unigene|Hs.181163|sp|HMGN2_HUMAN #1-89
+$ sn:12 prot_size:89 total_dr:89 num_dr:1 size_dr:89 #1-89
+PKRKAEGDAKGDKAKVKDEPQRRSARLSAKPAPPKPEPKPKKAPAKKGEKVPKGKKGKADAGKEGNNPAENGDAKTDQAQKAEGAGDAK
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
